@@ -14,17 +14,57 @@ func commaUseBufferSupportFloat(s string, isFloat bool) string {
 		s = sl[0]
 		fractionalPart = "." + sl[1]
 	}
+	sNew := reversionStr(s)
 	var buf bytes.Buffer
-	for i, v := range s {
+	for i, v := range sNew {
 		if i > 0 && i%3 == 0 {
 			buf.WriteString(",")
 		}
 		fmt.Fprintf(&buf, "%s", string(v))
 	}
-	return buf.String() + fractionalPart
+	return reversionStr(buf.String()) + fractionalPart
+}
+
+func reversionStr(s string) string {
+	sLen := len(s)
+	sNew := make([]byte, sLen, sLen)
+	for i, n := range s {
+		sNew[sLen-i-1] = byte(n)
+	}
+	return string(sNew)
+}
+
+func comma(s string) string {
+	b := bytes.Buffer{}
+	mantissaStart := 0
+	if s[0] == '+' || s[0] == '-' {
+		b.WriteByte(s[0])
+		mantissaStart = 1
+	}
+	mantissaEnd := strings.Index(s, ".")
+	if mantissaEnd == -1 {
+		mantissaEnd = len(s)
+	}
+	mantissa := s[mantissaStart:mantissaEnd]
+	pre := len(mantissa) % 3
+	if pre > 0 {
+		b.Write([]byte(mantissa[:pre]))
+		if len(mantissa) > pre {
+			b.WriteString(",")
+		}
+	}
+	for i, c := range mantissa[pre:] {
+		if i%3 == 0 && i != 0 {
+			b.WriteString(",")
+		}
+		b.WriteRune(c)
+	}
+	b.WriteString(s[mantissaEnd:])
+	return b.String()
 }
 
 func main() {
-	var f float64 = 1001231132.123
+	var f float64 = 1001231132.12311
 	fmt.Println(commaUseBufferSupportFloat(strconv.FormatFloat(f, 'f', -1, 64), true))
+	fmt.Println(comma(strconv.FormatFloat(f, 'f', -1, 64)))
 }
