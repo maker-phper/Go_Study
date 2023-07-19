@@ -7,12 +7,17 @@ import (
 	"strings"
 )
 
-func commaUseBufferSupportFloat(s string, isFloat bool) string {
+func commaUseBufferSupportFloat(s string) string {
 	var fractionalPart string
-	if isFloat {
-		sl := strings.Split(s, ".")
-		s = sl[0]
-		fractionalPart = "." + sl[1]
+	var sign byte
+
+	sl := strings.Split(s, ".")
+	s = sl[0]
+	fractionalPart = "." + sl[1]
+
+	if s[0] == '-' || s[0] == '+' {
+		sign = s[0]
+		s = s[1:]
 	}
 	sNew := reversionStr(s)
 	var buf bytes.Buffer
@@ -22,7 +27,7 @@ func commaUseBufferSupportFloat(s string, isFloat bool) string {
 		}
 		fmt.Fprintf(&buf, "%s", string(v))
 	}
-	return reversionStr(buf.String()) + fractionalPart
+	return string(sign) + reversionStr(buf.String()) + fractionalPart
 }
 
 func reversionStr(s string) string {
@@ -64,7 +69,7 @@ func comma(s string) string {
 }
 
 func main() {
-	var f float64 = 1001231132.12311
-	fmt.Println(commaUseBufferSupportFloat(strconv.FormatFloat(f, 'f', -1, 64), true))
+	var f float64 = -10116516.12311
+	fmt.Println(commaUseBufferSupportFloat(strconv.FormatFloat(f, 'f', -1, 64)))
 	fmt.Println(comma(strconv.FormatFloat(f, 'f', -1, 64)))
 }
