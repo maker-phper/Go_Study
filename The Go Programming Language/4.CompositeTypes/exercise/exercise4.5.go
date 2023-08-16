@@ -21,6 +21,8 @@ func eliminateDuplicatesElement(str []string) []string {
 				break
 			}
 			i--
+		} else {
+			res[i] = ss
 		}
 	}
 	return res
