@@ -45,7 +45,7 @@ func (s *Stack) IsEmpty() bool {
 }
 
 func (as *ArrStack) IsEmpty() bool {
-	if as.n == 0 {
+	if as.n == -1 {
 		return true
 	}
 	return false
