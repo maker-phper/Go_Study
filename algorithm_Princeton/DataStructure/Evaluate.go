@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+// This code handles operations between integers, leaving many issues unresolved, including operator precedence
+
+import (
+	"fmt"
+	"unicode"
+)
 
 type Node struct {
 	item interface{}
@@ -36,12 +41,43 @@ func (stack *Stack) Push(item interface{}) {
 }
 
 func main() {
-	s := Stack{}
-	fmt.Println(s.IsEmpty())
-	s.Push(1)
-	s.Push("b")
-	s.Push("*")
-	fmt.Println(s.Pop())
-	fmt.Println(s.Pop())
-	fmt.Println(s.Pop())
+	vals := Stack{}
+	ops := Stack{}
+	s := "(1 + ((21 - 1) * ((3 + 5) * (2 / 4))))"
+	d := false
+	for _, v := range s {
+
+		if unicode.IsDigit(v) {
+			val := float64(v - '0')
+			if d {
+				num := vals.Pop().(float64)
+				val = num*10 + val
+			}
+			vals.Push(val)
+			d = true
+		} else {
+			d = false
+		}
+		if v == '+' {
+			ops.Push(v)
+		} else if v == '*' {
+			ops.Push(v)
+		} else if v == '-' {
+			ops.Push(v)
+		} else if v == '/' {
+			ops.Push(v)
+		} else if v == ')' {
+			op := ops.Pop()
+			if op == '+' {
+				vals.Push(vals.Pop().(float64) + vals.Pop().(float64))
+			} else if op == '*' {
+				vals.Push(vals.Pop().(float64) * vals.Pop().(float64))
+			} else if op == '-' {
+				vals.Push(-vals.Pop().(float64) + vals.Pop().(float64))
+			} else if op == '/' {
+				vals.Push(1 / vals.Pop().(float64) * vals.Pop().(float64))
+			}
+		}
+	}
+	fmt.Println(vals.Pop())
 }
